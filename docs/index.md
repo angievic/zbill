@@ -1,10 +1,10 @@
 ---
 layout: page
-title: Inicio
+title: Eventos de tracking de ROI
 permalink: /
 ---
 
-**ZBILLS Analyzer** analiza código en tu máquina y propone **dónde medir ROI** con métricas como `time_saved`, `errors_reduced` y `value_generated`.
+**Zbill** analiza código en tu máquina y propone **dónde medir ROI** con métricas como `time_saved`, `errors_reduced` y `value_generated`.
 
 [Ver el código en GitHub](https://github.com/YOUR_GITHUB_USER/YOUR_REPO){: .btn }
 

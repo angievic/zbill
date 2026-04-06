@@ -1,0 +1,302 @@
+---
+# Tema Minima + paleta Zbill (GitHub Pages)
+---
+
+@import "minima";
+
+/* --- Variables :root (paleta base) --- */
+:root {
+  --bg: #faf7f2;
+  --bg-deep: #f3ece4;
+  --card: #ffffff;
+  --text: #1c1917;
+  --muted: #57534e;
+  --muted-warm: #6b5d4f;
+  --accent: #6b4423;
+  --accent-mid: #8b5c2e;
+  --accent-soft: #a67c52;
+  --accent-light: #c4a574;
+  --border: #e7e5e4;
+  --border-warm: #d4c4b0;
+  --note: #b45309;
+  --danger: #b91c1c;
+  --code-bg: #f5f0e8;
+  --code-text: #44403c;
+}
+
+/* Body y contenedor */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--text);
+  line-height: 1.65;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+  min-height: 100vh;
+}
+
+.wrapper {
+  max-width: 52rem;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 1.25rem;
+  padding-left: 1.25rem;
+}
+
+/* Cabecera del sitio (toolbar / header) */
+.site-header {
+  border-top: 3px solid var(--accent-mid);
+  border-bottom: 1px solid var(--border-warm);
+  background: linear-gradient(180deg, #ffffff 0%, rgba(250, 247, 242, 0.95) 100%);
+  box-shadow: 0 1px 0 var(--border);
+  min-height: auto;
+}
+
+.site-title,
+.site-title:visited {
+  color: var(--accent) !important;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.site-title:hover {
+  color: var(--accent-mid) !important;
+}
+
+.site-nav {
+  float: right;
+}
+
+.site-nav .page-link {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.site-nav .page-link:hover {
+  color: var(--accent-mid);
+  text-decoration: none;
+  border-bottom: 2px solid var(--accent-light);
+}
+
+.trigger .menu-icon svg path {
+  fill: var(--accent-mid);
+}
+
+/* Contenido principal */
+.page-content {
+  padding: 2rem 0 3rem;
+}
+
+.post-header {
+  margin-bottom: 1.75rem;
+}
+
+.post-title {
+  color: var(--text);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  padding-bottom: 0.35rem;
+  border-bottom: 3px solid var(--accent-light);
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.post-content {
+  font-size: 1.05rem;
+}
+
+.post-content > p:first-of-type {
+  font-size: 1.12rem;
+  color: var(--muted-warm);
+  background: #fffefb;
+  border: 1px solid var(--border-warm);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 2px 12px rgba(107, 68, 35, 0.06);
+}
+
+.post-content h2 {
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.35rem;
+  color: var(--muted-warm);
+  font-weight: 700;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border-warm);
+}
+
+.post-content h3 {
+  margin-top: 1.5rem;
+  color: var(--muted-warm);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.post-content h4 {
+  color: var(--muted-warm);
+  font-size: 1rem;
+}
+
+.post-content hr {
+  margin: 2rem 0;
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-warm), transparent);
+}
+
+/* Enlaces */
+.post-content a {
+  color: var(--accent-mid);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(139, 92, 46, 0.35);
+}
+
+.post-content a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent-soft);
+}
+
+/* Código inline y bloques */
+.post-content code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 0.12em 0.4em;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.post-content pre,
+.post-content .highlight {
+  background: var(--code-bg) !important;
+  border: 1px solid var(--border-warm);
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(107, 68, 35, 0.06);
+}
+
+.post-content pre > code {
+  background: transparent !important;
+  border: 0;
+  padding: 0;
+  color: var(--code-text);
+}
+
+.post-content .highlight .lineno {
+  color: var(--muted);
+}
+
+/* Tablas */
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.95rem;
+  border: 1px solid var(--border-warm);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(107, 68, 35, 0.06);
+  background: var(--card);
+}
+
+.post-content table th,
+.post-content table td {
+  border: 1px solid var(--border-warm);
+  padding: 0.6rem 0.75rem;
+  vertical-align: top;
+}
+
+.post-content table th {
+  background: #f5f0e8;
+  color: var(--muted-warm);
+  font-weight: 600;
+  text-align: left;
+}
+
+.post-content table tr:hover td {
+  background: rgba(139, 92, 46, 0.06);
+}
+
+.post-content table code {
+  white-space: nowrap;
+}
+
+/* Listas */
+.post-content ul,
+.post-content ol {
+  padding-left: 1.35rem;
+}
+
+.post-content li {
+  margin: 0.35rem 0;
+}
+
+.post-content li::marker {
+  color: var(--accent-soft);
+}
+
+/* Botón CTA (clase .btn en Markdown) */
+.post-content a.btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.55rem 1.15rem;
+  background: linear-gradient(180deg, #fffefb, #f5f0e8);
+  color: var(--accent-mid) !important;
+  font-weight: 600;
+  border: 1px solid var(--border-warm) !important;
+  border-radius: 8px;
+  border-bottom: 1px solid var(--border-warm) !important;
+  box-shadow: 0 2px 8px rgba(107, 68, 35, 0.08);
+}
+
+.post-content a.btn:hover {
+  color: var(--accent) !important;
+  border-color: var(--accent-soft) !important;
+  background: #fffefb;
+  box-shadow: 0 2px 12px rgba(107, 68, 35, 0.12);
+}
+
+/* Notas / énfasis */
+.post-content strong {
+  color: var(--text);
+}
+
+/* Pie */
+.site-footer {
+  border-top: 1px solid var(--border-warm);
+  padding: 1.75rem 0;
+  background: linear-gradient(180deg, transparent, var(--bg-deep));
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.footer-heading {
+  color: var(--muted-warm);
+}
+
+.site-footer a {
+  color: var(--accent-mid);
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+/* Impresión */
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .site-header {
+    box-shadow: none;
+  }
+
+  .post-content table tr:hover td {
+    background: transparent;
+  }
+}

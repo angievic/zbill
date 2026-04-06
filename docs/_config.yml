@@ -1,6 +1,6 @@
 # Jekyll (GitHub Pages) — Settings → Pages → Branch main, folder /docs
-title: ZBILLS Analyzer
-description: Escanea tu repo y sugiere dónde instrumentar métricas ROI
+title: Zbill
+description: Eventos de tracking de ROI — analiza tu repo y sugiere dónde instrumentar
 url: https://YOUR_GITHUB_USER.github.io
 baseurl: /YOUR_REPO
 # Sustituye YOUR_GITHUB_USER y YOUR_REPO por tu usuario/org y nombre del repo.
