@@ -1,20 +1,64 @@
 <meta name="theme-color" content="#faf7f2" />
 <style id="zbill-critical">
-  /* Carga aunque falle la petición a zbill.css (p. ej. baseurl mal en Pages) */
+  /* Después del style.css de Primer: máxima prioridad para quitar el “look” azul por defecto */
   html { scroll-behavior: smooth; }
-  body {
+
+  html body {
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
     color: #1c1917 !important;
     background: linear-gradient(180deg, #faf7f2 0%, #f3ece4 100%) !important;
     min-height: 100vh !important;
   }
-  body .container-lg.markdown-body {
+
+  html body div.container-lg.markdown-body {
     background: transparent !important;
-    box-shadow: none;
+    background-color: transparent !important;
+    color: #1c1917 !important;
+    box-shadow: none !important;
+  }
+
+  /* Enlaces: Primer / GitHub usan azul (#0969da, variables accent) */
+  html body div.container-lg.markdown-body a,
+  html body div.container-lg.markdown-body a:link,
+  html body div.container-lg.markdown-body a:visited {
+    color: #8b5c2e !important;
+    text-decoration: none !important;
+    border-bottom: 1px solid rgba(139, 92, 46, 0.35) !important;
+  }
+
+  html body div.container-lg.markdown-body a:hover,
+  html body div.container-lg.markdown-body a:focus {
+    color: #6b4423 !important;
+    border-bottom-color: #a67c52 !important;
+    text-decoration: none !important;
+  }
+
+  html body div.container-lg.markdown-body > h1:first-child,
+  html body div.container-lg.markdown-body > h1:first-child a,
+  html body div.container-lg.markdown-body > h1:first-child a:link,
+  html body div.container-lg.markdown-body > h1:first-child a:visited {
+    color: #6b4423 !important;
+    border-bottom: none !important;
+  }
+
+  html body div.container-lg.markdown-body > h1:first-child a:hover {
+    color: #8b5c2e !important;
+  }
+
+  html body div.container-lg.markdown-body h2,
+  html body div.container-lg.markdown-body h3,
+  html body div.container-lg.markdown-body h4 {
+    color: #6b5d4f !important;
+    border-color: #d4c4b0 !important;
+  }
+
+  html body div.container-lg.markdown-body .footer,
+  html body div.container-lg.markdown-body .footer a {
+    color: #57534e !important;
+  }
+
+  html body div.container-lg.markdown-body .footer a:hover {
+    color: #6b4423 !important;
   }
 </style>
-{% if site.github.url %}
-<link rel="stylesheet" href="{{ site.github.url }}/assets/css/zbill.css?v={{ site.github.build_revision | default: '1' }}" />
-{% else %}
-<link rel="stylesheet" href="{{ '/assets/css/zbill.css' | relative_url }}?v={{ site.github.build_revision | default: '1' }}" />
-{% endif %}
+<link rel="stylesheet" href="{{ '/assets/css/zbill.css' | relative_url }}?v=4" />

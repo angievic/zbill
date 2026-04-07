@@ -340,3 +340,61 @@ body {
     background: transparent;
   }
 }
+
+/* --- Anular azul de Primer / github-markdown (alta especificidad + !important) --- */
+html body div.container-lg.markdown-body {
+  color: #1c1917 !important;
+}
+
+html body div.container-lg.markdown-body a,
+html body div.container-lg.markdown-body a:link,
+html body div.container-lg.markdown-body a:visited {
+  color: #8b5c2e !important;
+  text-decoration: none !important;
+  border-bottom: 1px solid rgba(139, 92, 46, 0.35) !important;
+}
+
+html body div.container-lg.markdown-body a:hover,
+html body div.container-lg.markdown-body a:focus {
+  color: #6b4423 !important;
+  border-bottom-color: #a67c52 !important;
+}
+
+html body div.container-lg.markdown-body > h1:first-child a,
+html body div.container-lg.markdown-body > h1:first-child a:link,
+html body div.container-lg.markdown-body > h1:first-child a:visited {
+  color: #6b4423 !important;
+  border-bottom: none !important;
+}
+
+html body div.container-lg.markdown-body > h1:first-child a:hover {
+  color: #8b5c2e !important;
+}
+
+html body div.container-lg.markdown-body h1,
+html body div.container-lg.markdown-body h2,
+html body div.container-lg.markdown-body h3,
+html body div.container-lg.markdown-body h4,
+html body div.container-lg.markdown-body h5,
+html body div.container-lg.markdown-body h6 {
+  color: #6b5d4f !important;
+}
+
+html body div.container-lg.markdown-body table a {
+  color: #8b5c2e !important;
+}
+
+html body div.container-lg.markdown-body code,
+html body div.container-lg.markdown-body tt {
+  color: #44403c !important;
+  background-color: #f5f0e8 !important;
+}
+
+html body div.container-lg.markdown-body .border-gray-light {
+  border-color: #d4c4b0 !important;
+}
+
+html body div.container-lg.markdown-body .text-gray,
+html body div.container-lg.markdown-body .footer.text-gray {
+  color: #57534e !important;
+}
