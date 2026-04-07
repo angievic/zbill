@@ -1,10 +1,12 @@
 # Jekyll (GitHub Pages) — Settings → Pages → Branch main, folder /docs
 title: Zbill
 description: Eventos de tracking de ROI — analiza tu repo y sugiere dónde instrumentar
-url: https://YOUR_GITHUB_USER.github.io
-baseurl: /YOUR_REPO
-# Sustituye YOUR_GITHUB_USER y YOUR_REPO por tu usuario/org y nombre del repo.
-# Si usas un dominio custom o user site (username.github.io sin subruta), deja baseurl: ""
+# --- url / baseurl: sin esto, el CSS y enlaces fallan en Pages ---
+# Proyecto (https://USUARIO.github.io/NOMBRE-REPO/): baseurl DEBE ser "/NOMBRE-REPO" (con barra).
+# Sitio de usuario (solo https://USUARIO.github.io/): baseurl: ""
+url: "https://angievic.github.io"
+baseurl: "/zbill"
+# Repo: https://github.com/angievic/zbill — Pages: https://angievic.github.io/zbill/
 
 # Primer es el tema por defecto del action pages-build-deployment / github-pages.
 # Estilos Zbill: assets/css/zbill.css vía _includes/head-custom.html (sin @import minima).

@@ -6,7 +6,7 @@
 - Capa **LLM opcional** (Ollama, OpenAI, Anthropic, Google Gemini) para refinar sugerencias.
 - **Sin dependencias obligatorias** de terceros: el núcleo usa solo la biblioteca estándar de Python.
 
-📖 **Documentación web**: publica la carpeta [`docs/`](./docs/) con [GitHub Pages](#github-pages). La URL será `https://<usuario>.github.io/<repositorio>/` (edita `url` y `baseurl` en `docs/_config.yml`).
+📖 **Documentación web**: [`https://angievic.github.io/zbill/`](https://angievic.github.io/zbill/) (carpeta [`docs/`](./docs/) + [GitHub Pages](#github-pages)).
 
 ---
 
@@ -20,7 +20,7 @@
 ## Instalación
 
 ```bash
-git clone https://github.com/YOUR_ORG/zbill.git
+git clone https://github.com/angievic/zbill.git
 cd zbill
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
@@ -158,8 +158,8 @@ zbills analyze . --llm --provider ollama --model mistral
 1. En el repositorio: **Settings → Pages**.
 2. **Build and deployment**: Source **Deploy from a branch**.
 3. Branch **main** (o la que uses), carpeta **`/docs`**.
-4. Edita `docs/_config.yml`: sustituye `YOUR_GITHUB_USER` y `YOUR_REPO` en `url` y `baseurl`. Para un sitio de usuario (`username.github.io` sin subruta), usa `baseurl: ""`.
-5. Tras el despliegue, la URL será `https://<usuario>.github.io/<repositorio>/`.
+4. En `docs/_config.yml`, `url` y `baseurl` ya apuntan a este repo en Pages (`angievic.github.io` + `/zbill`). Si haces fork, actualízalos.
+5. Documentación publicada: [https://angievic.github.io/zbill/](https://angievic.github.io/zbill/).
 
 La documentación vive en [`docs/`](./docs/) (`index.md`, `_config.yml`, tema **Primer**, estilos en `assets/css/zbill.css` vía `head-custom.html`). Vista previa local (opcional):
 
@@ -188,5 +188,5 @@ MIT (ver `pyproject.toml`).
 
 ## Enlaces
 
-- [Documentación (GitHub Pages)](https://YOUR_GITHUB_USER.github.io/YOUR_REPO/) — actualiza la URL en tu fork.
+- [Documentación (GitHub Pages)](https://angievic.github.io/zbill/)
 - [Ollama](https://ollama.com)

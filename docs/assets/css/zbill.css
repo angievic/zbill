@@ -27,15 +27,17 @@ body {
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--text);
   line-height: 1.65;
-  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%) !important;
   min-height: 100vh;
 }
 
-/* Tema Primer: contenedor principal */
+/* Tema Primer: contenedor principal (fondo transparente para ver degradado del body) */
 .container-lg.markdown-body {
   max-width: 52rem;
   padding-top: 2rem;
   padding-bottom: 3rem;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Título del sitio (Primer: h1 > a) */

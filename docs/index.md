@@ -6,14 +6,14 @@ permalink: /
 
 **Zbill** analiza código en tu máquina y propone **dónde medir ROI** con métricas como `time_saved`, `errors_reduced` y `value_generated`.
 
-[Ver el código en GitHub](https://github.com/YOUR_GITHUB_USER/YOUR_REPO){: .btn }
+[Ver el código en GitHub](https://github.com/angievic/zbill){: .btn }
 
 ---
 
 ## Instalación
 
 ```bash
-git clone https://github.com/YOUR_ORG/zbill.git
+git clone https://github.com/angievic/zbill.git
 cd zbill
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
@@ -91,4 +91,6 @@ Tabla rápida de variables:
 
 ## Más detalle
 
-El **README** del repositorio incluye la misma referencia ampliada (tablas, ejemplos y notas de Pages). Actualiza en `_config.yml` las claves `url` y `baseurl` para que los enlaces y assets coincidan con tu despliegue.
+El **README** del repositorio incluye la misma referencia ampliada (tablas, ejemplos y notas de Pages).
+
+**Si en GitHub Pages no ves los colores crema / marrón:** en `_config.yml`, `baseurl` debe coincidir con el **nombre del repositorio** (p. ej. `"/zbill"`). En GitHub Actions el CSS también se resuelve con `site.github.url`. Tras corregir, espera el deploy y prueba recarga forzada (Ctrl+F5 / vaciar caché).

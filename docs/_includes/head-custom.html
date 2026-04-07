@@ -1,2 +1,20 @@
 <meta name="theme-color" content="#faf7f2" />
-<link rel="stylesheet" href="{{ '/assets/css/zbill.css' | relative_url }}" />
+<style id="zbill-critical">
+  /* Carga aunque falle la petición a zbill.css (p. ej. baseurl mal en Pages) */
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
+    color: #1c1917 !important;
+    background: linear-gradient(180deg, #faf7f2 0%, #f3ece4 100%) !important;
+    min-height: 100vh !important;
+  }
+  body .container-lg.markdown-body {
+    background: transparent !important;
+    box-shadow: none;
+  }
+</style>
+{% if site.github.url %}
+<link rel="stylesheet" href="{{ site.github.url }}/assets/css/zbill.css?v={{ site.github.build_revision | default: '1' }}" />
+{% else %}
+<link rel="stylesheet" href="{{ '/assets/css/zbill.css' | relative_url }}?v={{ site.github.build_revision | default: '1' }}" />
+{% endif %}
