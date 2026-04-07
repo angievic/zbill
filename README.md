@@ -155,11 +155,22 @@ zbills analyze . --llm --provider ollama --model mistral
 
 ## GitHub Pages
 
-1. En el repositorio: **Settings → Pages**.
-2. **Build and deployment**: Source **Deploy from a branch**.
-3. Branch **main** (o la que uses), carpeta **`/docs`**.
-4. En `docs/_config.yml`, `url` y `baseurl` ya apuntan a este repo en Pages (`angievic.github.io` + `/zbill`). Si haces fork, actualízalos.
-5. Documentación publicada: [https://angievic.github.io/zbill/](https://angievic.github.io/zbill/).
+Sitio: [https://angievic.github.io/zbill/](https://angievic.github.io/zbill/)
+
+### Publicar con GitHub Actions (recomendado)
+
+El repo incluye [`.github/workflows/jekyll-pages.yml`](./.github/workflows/jekyll-pages.yml), que construye Jekyll desde **`/docs`** en cada push a **`main`**.
+
+1. **Settings → Pages → Build and deployment**.
+2. En **Source**, elige **GitHub Actions** (no “Deploy from a branch”). Si dejas solo “branch”, este workflow no despliega y la web puede quedarse desactualizada o en un build antiguo.
+3. Haz push a `main` o abre **Actions → Deploy Jekyll site to Pages → Run workflow** para forzar un despliegue.
+4. Si falla el job, revisa la pestaña **Actions** del repo (ahí verás el error de Jekyll).
+
+### Alternativa: solo rama + carpeta /docs
+
+Si prefieres el build clásico de Pages: Source **Deploy from a branch**, branch **main**, carpeta **`/docs`**. En ese caso **desactiva o borra** el workflow anterior para no tener dos formas de publicar a la vez.
+
+En `docs/_config.yml`, `url` y `baseurl` apuntan a `angievic.github.io` y `/zbill` (ajústalo si haces fork).
 
 La documentación vive en [`docs/`](./docs/) (`index.md`, `_config.yml`, tema **Primer**, estilos en `assets/css/zbill.css` vía `head-custom.html`). Vista previa local (opcional):
 
