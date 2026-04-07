@@ -6,13 +6,12 @@ baseurl: /YOUR_REPO
 # Sustituye YOUR_GITHUB_USER y YOUR_REPO por tu usuario/org y nombre del repo.
 # Si usas un dominio custom o user site (username.github.io sin subruta), deja baseurl: ""
 
-theme: minima
+# Primer es el tema por defecto del action pages-build-deployment / github-pages.
+# Estilos Zbill: assets/css/zbill.css vía _includes/head-custom.html (sin @import minima).
+theme: jekyll-theme-primer
 plugins:
   - jekyll-feed
 
 markdown: kramdown
 kramdown:
   input: GFM
-
-header_pages:
-  - index.md

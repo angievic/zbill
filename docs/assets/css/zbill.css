@@ -1,10 +1,5 @@
----
-# Tema Minima + paleta Zbill (GitHub Pages)
----
+/* Zbill — paleta cálida (GitHub Pages + tema Primer / compatible con .markdown-body y .post-content) */
 
-@import "minima";
-
-/* --- Variables :root (paleta base) --- */
 :root {
   --bg: #faf7f2;
   --bg-deep: #f3ece4;
@@ -24,7 +19,6 @@
   --code-text: #44403c;
 }
 
-/* Body y contenedor */
 html {
   scroll-behavior: smooth;
 }
@@ -37,6 +31,36 @@ body {
   min-height: 100vh;
 }
 
+/* Tema Primer: contenedor principal */
+.container-lg.markdown-body {
+  max-width: 52rem;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+/* Título del sitio (Primer: h1 > a) */
+.markdown-body > h1:first-child {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  padding-bottom: 0.35rem;
+  border-bottom: 3px solid var(--accent-light);
+  display: block;
+}
+
+.markdown-body > h1:first-child a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: none;
+}
+
+.markdown-body > h1:first-child a:hover {
+  color: var(--accent-mid);
+}
+
+/* Minima (por si cambias de tema) */
 .wrapper {
   max-width: 52rem;
   margin-right: auto;
@@ -45,28 +69,21 @@ body {
   padding-left: 1.25rem;
 }
 
-/* Cabecera del sitio (toolbar / header) */
 .site-header {
   border-top: 3px solid var(--accent-mid);
   border-bottom: 1px solid var(--border-warm);
   background: linear-gradient(180deg, #ffffff 0%, rgba(250, 247, 242, 0.95) 100%);
   box-shadow: 0 1px 0 var(--border);
-  min-height: auto;
 }
 
 .site-title,
 .site-title:visited {
   color: var(--accent) !important;
   font-weight: 700;
-  letter-spacing: -0.02em;
 }
 
 .site-title:hover {
   color: var(--accent-mid) !important;
-}
-
-.site-nav {
-  float: right;
 }
 
 .site-nav .page-link {
@@ -76,21 +93,10 @@ body {
 
 .site-nav .page-link:hover {
   color: var(--accent-mid);
-  text-decoration: none;
-  border-bottom: 2px solid var(--accent-light);
 }
 
-.trigger .menu-icon svg path {
-  fill: var(--accent-mid);
-}
-
-/* Contenido principal */
 .page-content {
   padding: 2rem 0 3rem;
-}
-
-.post-header {
-  margin-bottom: 1.75rem;
 }
 
 .post-title {
@@ -104,10 +110,13 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* Contenido Markdown */
+.markdown-body,
 .post-content {
   font-size: 1.05rem;
 }
 
+.markdown-body > p:first-of-type,
 .post-content > p:first-of-type {
   font-size: 1.12rem;
   color: var(--muted-warm);
@@ -118,6 +127,7 @@ body {
   box-shadow: 0 2px 12px rgba(107, 68, 35, 0.06);
 }
 
+.markdown-body h2,
 .post-content h2 {
   margin-top: 2.25rem;
   margin-bottom: 0.75rem;
@@ -128,6 +138,7 @@ body {
   border-bottom: 1px solid var(--border-warm);
 }
 
+.markdown-body h3,
 .post-content h3 {
   margin-top: 1.5rem;
   color: var(--muted-warm);
@@ -135,11 +146,13 @@ body {
   font-weight: 700;
 }
 
+.markdown-body h4,
 .post-content h4 {
   color: var(--muted-warm);
   font-size: 1rem;
 }
 
+.markdown-body hr,
 .post-content hr {
   margin: 2rem 0;
   border: 0;
@@ -147,7 +160,7 @@ body {
   background: linear-gradient(90deg, transparent, var(--border-warm), transparent);
 }
 
-/* Enlaces */
+.markdown-body a,
 .post-content a {
   color: var(--accent-mid);
   font-weight: 500;
@@ -155,12 +168,13 @@ body {
   border-bottom: 1px solid rgba(139, 92, 46, 0.35);
 }
 
+.markdown-body a:hover,
 .post-content a:hover {
   color: var(--accent);
   border-bottom-color: var(--accent-soft);
 }
 
-/* Código inline y bloques */
+.markdown-body code,
 .post-content code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.9em;
@@ -171,6 +185,8 @@ body {
   border: 1px solid var(--border);
 }
 
+.markdown-body pre,
+.markdown-body .highlight,
 .post-content pre,
 .post-content .highlight {
   background: var(--code-bg) !important;
@@ -179,6 +195,7 @@ body {
   box-shadow: 0 2px 12px rgba(107, 68, 35, 0.06);
 }
 
+.markdown-body pre > code,
 .post-content pre > code {
   background: transparent !important;
   border: 0;
@@ -186,11 +203,12 @@ body {
   color: var(--code-text);
 }
 
+.markdown-body .highlight .lineno,
 .post-content .highlight .lineno {
   color: var(--muted);
 }
 
-/* Tablas */
+.markdown-body table,
 .post-content table {
   width: 100%;
   border-collapse: collapse;
@@ -203,6 +221,8 @@ body {
   background: var(--card);
 }
 
+.markdown-body table th,
+.markdown-body table td,
 .post-content table th,
 .post-content table td {
   border: 1px solid var(--border-warm);
@@ -210,6 +230,7 @@ body {
   vertical-align: top;
 }
 
+.markdown-body table th,
 .post-content table th {
   background: #f5f0e8;
   color: var(--muted-warm);
@@ -217,29 +238,34 @@ body {
   text-align: left;
 }
 
+.markdown-body table tr:hover td,
 .post-content table tr:hover td {
   background: rgba(139, 92, 46, 0.06);
 }
 
+.markdown-body table code,
 .post-content table code {
   white-space: nowrap;
 }
 
-/* Listas */
+.markdown-body ul,
+.markdown-body ol,
 .post-content ul,
 .post-content ol {
   padding-left: 1.35rem;
 }
 
+.markdown-body li,
 .post-content li {
   margin: 0.35rem 0;
 }
 
+.markdown-body li::marker,
 .post-content li::marker {
   color: var(--accent-soft);
 }
 
-/* Botón CTA (clase .btn en Markdown) */
+.markdown-body a.btn,
 .post-content a.btn {
   display: inline-block;
   margin-top: 0.5rem;
@@ -253,6 +279,7 @@ body {
   box-shadow: 0 2px 8px rgba(107, 68, 35, 0.08);
 }
 
+.markdown-body a.btn:hover,
 .post-content a.btn:hover {
   color: var(--accent) !important;
   border-color: var(--accent-soft) !important;
@@ -260,22 +287,37 @@ body {
   box-shadow: 0 2px 12px rgba(107, 68, 35, 0.12);
 }
 
-/* Notas / énfasis */
+.markdown-body strong,
 .post-content strong {
   color: var(--text);
 }
 
-/* Pie */
+/* Pie Primer (.footer) */
+.markdown-body .footer,
+.footer {
+  border-top-color: var(--border-warm) !important;
+  color: var(--muted) !important;
+  margin-top: 2.5rem !important;
+  padding-top: 1rem !important;
+}
+
+.markdown-body .footer a,
+.footer a {
+  color: var(--accent-mid);
+  border-bottom: none;
+}
+
+.markdown-body .footer a:hover,
+.footer a:hover {
+  color: var(--accent);
+}
+
 .site-footer {
   border-top: 1px solid var(--border-warm);
   padding: 1.75rem 0;
   background: linear-gradient(180deg, transparent, var(--bg-deep));
   color: var(--muted);
   font-size: 0.9rem;
-}
-
-.footer-heading {
-  color: var(--muted-warm);
 }
 
 .site-footer a {
@@ -286,16 +328,12 @@ body {
   color: var(--accent);
 }
 
-/* Impresión */
 @media print {
   body {
     background: #fff;
   }
 
-  .site-header {
-    box-shadow: none;
-  }
-
+  .markdown-body table tr:hover td,
   .post-content table tr:hover td {
     background: transparent;
   }

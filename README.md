@@ -161,7 +161,7 @@ zbills analyze . --llm --provider ollama --model mistral
 4. Edita `docs/_config.yml`: sustituye `YOUR_GITHUB_USER` y `YOUR_REPO` en `url` y `baseurl`. Para un sitio de usuario (`username.github.io` sin subruta), usa `baseurl: ""`.
 5. Tras el despliegue, la URL será `https://<usuario>.github.io/<repositorio>/`.
 
-La documentación vive en [`docs/`](./docs/) (`index.md`, `_config.yml`). Vista previa local (opcional):
+La documentación vive en [`docs/`](./docs/) (`index.md`, `_config.yml`, tema **Primer**, estilos en `assets/css/zbill.css` vía `head-custom.html`). Vista previa local (opcional):
 
 ```bash
 cd docs
