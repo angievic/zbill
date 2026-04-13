@@ -24,7 +24,7 @@ ZBILLS_API_KEY=
 
 # --- LLM (analyze --llm) ---
 # Proveedor: ollama | openai | anthropic | gemini
-# Por defecto: ollama + mistral (local, bueno para código)
+# Por defecto: ollama + mistral (local). Gemini: gemini-3.1-flash-lite-preview si no defines modelo.
 ZBILLS_LLM_PROVIDER=ollama
 ZBILLS_LLM_MODEL=mistral
 
@@ -142,7 +142,16 @@ def cmd_suggest(args: argparse.Namespace) -> int:
     for item in data.get("findings", [])[: args.limit]:
         print(f"\n{item['file']}::{item['function']} (line {item['line']})")
         for s in item.get("suggestions", []):
-            print(f"  • {s['metric']}: {s['example']}")
+            cat = s.get("category", "")
+            metric = s.get("metric", "")
+            sug = (s.get("suggestion") or s.get("example") or "").strip()
+            prefix = f"[{cat}] " if cat else ""
+            print(f"  • {prefix}{metric}: {sug}")
+            fd = s.get("fields")
+            if isinstance(fd, dict) and (fd.get("required") or fd.get("optional")):
+                req = fd.get("required") or []
+                opt = fd.get("optional") or []
+                print(f"      fields — required: {req}; optional: {opt}")
     return 0
 
 

@@ -1,6 +1,6 @@
 # ZBILLS Analyzer
 
-**ZBILLS** es una herramienta de línea de comandos que **escanea tu repositorio** y **sugiere dónde instrumentar métricas ROI** (`time_saved`, `errors_reduced`, `value_generated`) con ejemplos de `track()`.
+**ZBILLS** es una herramienta de línea de comandos que **escanea tu repositorio** y **sugiere dónde instrumentar métricas ROI** en Zpulse: **3 de impacto** (`time_saved`, `errors_reduced`, `value_generated`) y **6 de costo** (`cost_llm`, `cost_compute`, `cost_api`, `cost_storage`, `cost_human`, `cost_other`), con snippets `zbills.track(...)`.
 
 - Análisis **estático** (AST en Python, heurísticas en Go, JavaScript, TypeScript, Java y Ruby).
 - Capa **LLM opcional** (Ollama, OpenAI, Anthropic, Google Gemini) para refinar sugerencias.
@@ -61,7 +61,7 @@ zbills analyze . --llm
 |--------|------------|-------------|
 | `zbills init` | `[path]` (por defecto `.`) | Crea `.zbills.env.example` en el directorio del proyecto con plantillas de variables (ingest, LLM, Ollama). No sobrescribe si el archivo ya existe. |
 | `zbills analyze` | `[path]` (por defecto `.`) | Recorre el repo y crea una carpeta con nombre único que **termina en `-zbill-runtime`** (timestamp + UUID). Dentro escribe **`zbills_report.json`**, **`zbills_suggestions.md`** y **`zbills_runtime_report.html`**. Imprime resumen y la ruta de la carpeta. |
-| `zbills suggest` | `[path]` (por defecto `.`) | Si existe `zbills_report.json` en la ruta, lo usa; si no, el **más reciente** bajo `**/*-zbill-runtime/zbills_report.json`. Muestra ejemplos `track()` por consola. |
+| `zbills suggest` | `[path]` (por defecto `.`) | Si existe `zbills_report.json` en la ruta, lo usa; si no, el **más reciente** bajo `**/*-zbill-runtime/zbills_report.json`. Muestra `suggestion`, `category` y `fields` por hallazgo. |
 | `zbills --version` | — | Muestra la versión del paquete. |
 
 ### Tabla de opciones: `zbills analyze`
@@ -95,7 +95,70 @@ Cada ejecución de `zbills analyze` crea **una carpeta nueva** con patrón:
 |---------|-----------|
 | `zbills_report.json` | Hallazgos ordenados; clave **`runtime`** (run id, carpetas, inicio/fin UTC, duración en s, versión, `--max`, si hubo LLM). Con `--llm`, también `llm` por hallazgo e informe. |
 | `zbills_suggestions.md` | Misma información en Markdown; sección **Runtime** al inicio si aplica. |
-| `zbills_runtime_report.html` | Informe visual del runtime y tabla de hallazgos (abrir en el navegador). |
+| `zbills_runtime_report.html` | Informe visual: runtime, resumen, tablas **Impact** / **Cost**, vista previa de fórmula ROI, hallazgos filtrables. |
+
+---
+
+## Métricas Zpulse (v2)
+
+Cada sugerencia en JSON incluye `metric`, `category` (`impact` \| `cost`), `reason`, `suggestion`, `score` y `fields` (`required` / `optional`).
+
+| Categoría | Métrica | Campos obligatorios (API) | Opcionales (resumen) |
+|-----------|---------|---------------------------|------------------------|
+| impact | `time_saved` | `agent`, `value`, `unit` | `hourly_rate`, `metadata` |
+| impact | `errors_reduced` | `agent`, `value` | `unit`, `metadata` |
+| impact | `value_generated` | `agent`, `value` | `unit`, `metadata` |
+| cost | `cost_llm` | `agent`, `value`, `provider`, `model`, `tokens_input`, `tokens_output`, `cost_input`, `cost_output` | `price_*`, `is_estimated`, `metadata` |
+| cost | `cost_compute` | `agent`, `value` | `unit`, `provider`, `hourly_rate`, `is_estimated`, `metadata` |
+| cost | `cost_api` | `agent`, `value` | `unit`, `provider`, `is_estimated`, `metadata` |
+| cost | `cost_storage` | `agent`, `value` | `unit`, `provider`, `is_estimated`, `metadata` |
+| cost | `cost_human` | `agent`, `value` | `unit`, `hourly_rate`, `is_estimated`, `metadata` |
+| cost | `cost_other` | `agent`, `value` | `unit`, `provider`, `is_estimated`, `metadata` |
+
+**`cost_llm`:** el campo `value` debe ser coherente con `cost_input + cost_output` (tolerancia típica **0.01**). En código: `zbills.metrics.cost_llm_value_consistent(value, cost_input, cost_output)`.
+
+---
+
+## API de ingest (referencia)
+
+Envío de eventos:
+
+`POST {URL_PREFIX}/api/v1/events` — `Authorization: Bearer {API_KEY}` — `Content-Type: application/json`
+
+Ejemplo `cost_llm` (campos requeridos según backend):
+
+```json
+{
+  "project_id": "uuid-del-proyecto",
+  "agent": "code_reviewer",
+  "metric": "cost_llm",
+  "value": 0.595,
+  "unit": "usd",
+  "provider": "openai",
+  "model": "gpt-4o",
+  "tokens_input": 150000,
+  "tokens_output": 22000,
+  "cost_input": 0.375,
+  "cost_output": 0.22
+}
+```
+
+Resumen y ROI agregado:
+
+`GET {URL_PREFIX}/api/v1/summary?days=30` — mismo `Authorization`.
+
+Respuesta típica (ejemplo):
+
+```json
+{
+  "total_impact_usd": 4370.0,
+  "total_cost_usd": 405.0,
+  "total_roi_percent": 978.77,
+  "agents": []
+}
+```
+
+**ROI (referencia):** `ROI % = (total_impact_usd - total_cost_usd) / total_cost_usd × 100` (según agregación del backend).
 
 ---
 

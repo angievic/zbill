@@ -3,10 +3,11 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+from zbills.metrics import category_for_metric, fields_dict_for, suggestion_code
 from zbills.models import Finding, Suggestion
 from zbills.rules import (
-    example_track,
-    merge_suggestions,
+    detect_cost_snippet,
+    merge_suggestion_objects,
     score_errors,
     score_time_saved,
     score_value,
@@ -80,27 +81,31 @@ def analyze_python_file(path: Path, root: Path) -> list[Finding]:
             body_lines = _body_lines(node)
             snippet = _snippet_from_body(source, node)
             agent = _agent_hint_from_name(name)
-            cands: list[tuple[str, str, str, float]] = []
+            collected: list[Suggestion] = []
 
             v = score_value(name, snippet)
             if v >= 2.0:
-                cands.append(
-                    (
-                        "value_generated",
-                        "Nombre o cuerpo alineado con flujos de negocio (creación, cobro, lead, etc.).",
-                        example_track("value_generated", agent),
-                        v,
+                collected.append(
+                    Suggestion(
+                        metric="value_generated",
+                        category=category_for_metric("value_generated"),
+                        reason="Nombre o cuerpo alineado con flujos de negocio (creación, cobro, lead, etc.).",
+                        suggestion=suggestion_code("value_generated", agent),
+                        score=v,
+                        fields=fields_dict_for("value_generated"),
                     )
                 )
 
             if _has_try(node):
                 se = score_errors(snippet)
-                cands.append(
-                    (
-                        "errors_reduced",
-                        "Bloque try/except: buen lugar para medir fallos evitados o recuperación.",
-                        example_track("errors_reduced", agent),
-                        max(se, 4.0),
+                collected.append(
+                    Suggestion(
+                        metric="errors_reduced",
+                        category=category_for_metric("errors_reduced"),
+                        reason="Bloque try/except: buen lugar para medir fallos evitados o recuperación.",
+                        suggestion=suggestion_code("errors_reduced", agent),
+                        score=max(se, 4.0),
+                        fields=fields_dict_for("errors_reduced"),
                     )
                 )
 
@@ -108,28 +113,29 @@ def analyze_python_file(path: Path, root: Path) -> list[Finding]:
             if _has_loops(node) and body_lines >= 12:
                 st = max(st, 4.0)
             if st >= 2.5:
-                cands.append(
-                    (
-                        "time_saved",
-                        "Función larga, loops o I/O: candidata a ahorro de tiempo / automatización.",
-                        example_track("time_saved", agent),
-                        st,
+                collected.append(
+                    Suggestion(
+                        metric="time_saved",
+                        category=category_for_metric("time_saved"),
+                        reason="Función larga, loops o I/O: candidata a ahorro de tiempo / automatización.",
+                        suggestion=suggestion_code("time_saved", agent),
+                        score=st,
+                        fields=fields_dict_for("time_saved"),
                     )
                 )
 
-            merged = merge_suggestions(cands)
+            collected.extend(detect_cost_snippet(snippet, agent))
+
+            merged = merge_suggestion_objects(collected)
             if not merged:
                 return
-            suggestions = [
-                Suggestion(metric=m, reason=r, example=e, score=sc) for m, r, e, sc in merged
-            ]
             findings.append(
                 Finding(
                     file=rel,
                     function=name,
                     line=node.lineno,
                     language="python",
-                    suggestions=suggestions,
+                    suggestions=merged,
                 )
             )
 

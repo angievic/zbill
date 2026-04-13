@@ -4,7 +4,7 @@ title: Eventos de tracking de ROI
 permalink: /
 ---
 
-**Zbill** analiza código en tu máquina y propone **dónde medir ROI** con métricas como `time_saved`, `errors_reduced` y `value_generated`.
+**Zbill** analiza código en tu máquina y propone **dónde medir ROI** con **9 métricas Zpulse v2**: impacto (`time_saved`, `errors_reduced`, `value_generated`) y costo (`cost_llm`, `cost_compute`, `cost_api`, `cost_storage`, `cost_human`, `cost_other`).
 
 [Ver el código en GitHub](https://github.com/angievic/zbill){: .btn }
 
@@ -30,7 +30,7 @@ zbills --version
 |--------|------------|----------|
 | `zbills init` | `[path]` → default `.` | Crea **`.zbills.env.example`** (plantilla de variables para ingest y LLM). |
 | `zbills analyze` | `[path]` → default `.` | Crea una carpeta única `…-zbill-runtime` con **`zbills_report.json`**, **`zbills_suggestions.md`** y **`zbills_runtime_report.html`**. |
-| `zbills suggest` | `[path]` → default `.` | Usa el JSON en esa ruta o el informe más reciente en `**/*-zbill-runtime/`. |
+| `zbills suggest` | `[path]` → default `.` | Usa el JSON en esa ruta o el informe más reciente en `**/*-zbill-runtime/`. Imprime categoría, métrica y `fields`. |
 | `zbills --version` | — | Muestra la versión instalada. |
 
 ### Opciones de `zbills analyze`
@@ -49,6 +49,19 @@ zbills --version
 | Opción | Default | Descripción |
 |--------|---------|-------------|
 | `--limit` | `20` | Máximo de entradas a imprimir. |
+
+---
+
+## Métricas (v2)
+
+- **Impacto (numerador):** `time_saved`, `errors_reduced`, `value_generated` — `category: impact`.
+- **Costo (denominador):** `cost_llm`, `cost_compute`, `cost_api`, `cost_storage`, `cost_human`, `cost_other` — `category: cost`.
+
+Los informes (`zbills_report.json`, `zbills_suggestions.md`, `zbills_runtime_report.html`) incluyen `suggestion` (snippet `zbills.track`), `fields.required` / `fields.optional` y, en HTML, tablas separadas de impacto vs costo más una **vista previa de la fórmula ROI**.
+
+**Ingest:** `POST {URL_PREFIX}/api/v1/events` con `Authorization: Bearer {API_KEY}`. **Resumen:** `GET {URL_PREFIX}/api/v1/summary?days=30` devuelve `total_impact_usd`, `total_cost_usd`, `total_roi_percent`.
+
+**`cost_llm`:** validar que `value` ≈ `cost_input + cost_output` (tolerancia 0.01).
 
 ---
 
@@ -72,6 +85,7 @@ Python (AST), Go, JavaScript, TypeScript, Java y Ruby (heurísticas). Se saltan 
 ## LLM y Ollama
 
 - **Default**: proveedor `ollama`, modelo `mistral`.  
+- **Gemini (default de modelo):** `gemini-3.1-flash-lite-preview` si no defines `ZBILLS_LLM_MODEL`.  
 - **Cloud**: define la API key correspondiente y `ZBILLS_LLM_PROVIDER`.  
 - **macOS/Linux**: si falta el modelo en Ollama, zbills puede ejecutar `ollama pull`.  
 - **Windows**: se muestran instrucciones y enlace de descarga; el `pull` es manual.

@@ -7,17 +7,32 @@ from typing import Any
 @dataclass
 class Suggestion:
     metric: str
+    category: str  # "impact" | "cost"
     reason: str
-    example: str
+    suggestion: str  # código zbills.track(...)
     score: float = 0.0
+    fields: dict[str, list[str]] | None = None  # required / optional keys
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        d: dict[str, Any] = {
             "metric": self.metric,
+            "category": self.category,
             "reason": self.reason,
-            "example": self.example,
+            "suggestion": self.suggestion,
             "score": round(self.score, 2),
         }
+        if self.fields:
+            d["fields"] = {
+                "required": list(self.fields.get("required", [])),
+                "optional": list(self.fields.get("optional", [])),
+            }
+        d["example"] = self.suggestion  # compat
+        return d
+
+    @property
+    def example(self) -> str:
+        """Alias retrocompatible."""
+        return self.suggestion
 
 
 @dataclass

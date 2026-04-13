@@ -279,6 +279,80 @@ def write_runtime_html(report: AnalysisReport, path: Path) -> None:
     }}
     a {{ color: var(--accent-mid); text-decoration: none; }}
     a:hover {{ color: var(--accent); text-decoration: underline; }}
+    .metrics-tabs-wrap {{
+      margin-bottom: 1rem;
+      padding: 0;
+      overflow: hidden;
+    }}
+    .tab-row {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      border-bottom: 1px solid var(--border-warm);
+      background: linear-gradient(180deg, #fffefb, #faf7f2);
+    }}
+    .tab-btn {{
+      flex: 1 1 0;
+      min-width: 8rem;
+      margin: 0;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }}
+    .tab-btn:hover {{
+      color: var(--text);
+      background: rgba(139, 92, 46, 0.06);
+    }}
+    .tab-btn.tab-btn-active {{
+      color: var(--text);
+      background: #fffefb;
+      border-bottom-color: var(--accent-soft);
+    }}
+    .tab-btn.tab-impact.tab-btn-active {{ border-bottom-color: #22c55e; color: #166534; }}
+    .tab-btn.tab-cost.tab-btn-active {{ border-bottom-color: #ea580c; color: #9a3412; }}
+    .tab-btn.tab-roi.tab-btn-active {{ border-bottom-color: var(--accent-mid); color: var(--accent); }}
+    .tab-panel-wrap {{
+      padding: 1rem 1.15rem 1.15rem;
+      background: var(--card);
+    }}
+    .tab-panel[hidden] {{
+      display: none !important;
+    }}
+    .impact-card h2 {{
+      margin: 0 0 0.75rem;
+      font-size: 1.05rem;
+      color: #166534;
+      padding-bottom: 0.35rem;
+      border-bottom: 2px solid #22c55e;
+    }}
+    .cost-card h2 {{
+      margin: 0 0 0.75rem;
+      font-size: 1.05rem;
+      color: #9a3412;
+      padding-bottom: 0.35rem;
+      border-bottom: 2px solid #ea580c;
+    }}
+    .roi-card h2 {{
+      margin: 0 0 0.5rem;
+      font-size: 1.05rem;
+      color: var(--muted-warm);
+    }}
+    .roi-formula {{
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      color: var(--code-text);
+    }}
     noscript {{
       display: block;
       padding: 1rem;
@@ -292,6 +366,10 @@ def write_runtime_html(report: AnalysisReport, path: Path) -> None:
       body {{ background: #fff; }}
       .card, details.finding {{ box-shadow: none; break-inside: avoid; }}
       .controls, #json-interactive {{ display: none; }}
+      .metrics-tabs-wrap .tab-row {{ display: none; }}
+      .metrics-tabs-wrap .tab-panel {{ display: block !important; }}
+      .metrics-tabs-wrap .tab-panel[hidden] {{ display: block !important; }}
+      .metrics-tabs-wrap .tab-panel + .tab-panel {{ margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-warm); }}
     }}
   </style>
 </head>
@@ -305,6 +383,18 @@ def write_runtime_html(report: AnalysisReport, path: Path) -> None:
     <div id="mount-runtime"></div>
     <div id="mount-llm"></div>
     <section class="card" id="mount-summary"></section>
+    <section class="card metrics-tabs-wrap" id="metrics-tabs-wrap" style="display:none" aria-label="Métricas por pestaña">
+      <div class="tab-row" role="tablist" aria-label="Impacto, costo y ROI">
+        <button type="button" class="tab-btn tab-impact tab-btn-active" role="tab" id="tab-btn-impact" aria-selected="true" aria-controls="panel-impact" tabindex="0">Impact metrics</button>
+        <button type="button" class="tab-btn tab-cost" role="tab" id="tab-btn-cost" aria-selected="false" aria-controls="panel-cost" tabindex="-1">Cost metrics</button>
+        <button type="button" class="tab-btn tab-roi" role="tab" id="tab-btn-roi" aria-selected="false" aria-controls="panel-roi" tabindex="-1">ROI preview</button>
+      </div>
+      <div class="tab-panel-wrap">
+        <div id="panel-impact" class="tab-panel impact-card" role="tabpanel" aria-labelledby="tab-btn-impact"></div>
+        <div id="panel-cost" class="tab-panel cost-card" role="tabpanel" aria-labelledby="tab-btn-cost" hidden></div>
+        <div id="panel-roi" class="tab-panel roi-card" role="tabpanel" aria-labelledby="tab-btn-roi" hidden></div>
+      </div>
+    </section>
     <section class="card controls" id="toolbar" hidden>
       <input type="search" id="search" placeholder="Buscar en archivo, función, métrica, razón…" autocomplete="off" />
       <label>Métrica <select id="metric-filter"><option value="">Todas</option></select></label>
@@ -422,13 +512,145 @@ def write_runtime_html(report: AnalysisReport, path: Path) -> None:
     return (f.suggestions || []).map((s) => s.metric).filter(Boolean);
   }}
 
+  function suggestionText(s) {{
+    return (s && (s.suggestion || s.example)) ? String(s.suggestion || s.example) : "";
+  }}
+
+  function categoryForSuggestion(s) {{
+    const c = (s && s.category) ? String(s.category).toLowerCase() : "";
+    if (c === "impact" || c === "cost") return c;
+    const m = (s && s.metric) ? String(s.metric) : "";
+    if (["time_saved", "errors_reduced", "value_generated"].includes(m)) return "impact";
+    if (m && m.indexOf("cost_") === 0) return "cost";
+    return "";
+  }}
+
   function haystackForFinding(f) {{
     const parts = [f.file, f.function, f.language, String(f.line)];
     (f.suggestions || []).forEach((s) => {{
-      parts.push(s.metric, s.reason, s.example);
+      parts.push(s.metric, s.reason, suggestionText(s), categoryForSuggestion(s));
     }});
     if (f.llm) parts.push(JSON.stringify(f.llm));
     return parts.join("\\n");
+  }}
+
+  function buildImpactCostRoi(data) {{
+    const findings = data.findings || [];
+    const impactRows = [];
+    const costRows = [];
+    findings.forEach((f) => {{
+      (f.suggestions || []).forEach((s) => {{
+        const cat = categoryForSuggestion(s);
+        if (cat === "impact") impactRows.push({{ f: f, s: s }});
+        else if (cat === "cost") costRows.push({{ f: f, s: s }});
+      }});
+    }});
+
+    function fillSection(sectionEl, title, rows) {{
+      sectionEl.innerHTML = "";
+      sectionEl.appendChild(el("h2", null, title));
+      if (rows.length === 0) {{
+        sectionEl.appendChild(el("p", "meta", "Sin sugerencias en esta categoría."));
+        return;
+      }}
+      const tbl = document.createElement("table");
+      tbl.className = "sug";
+      tbl.innerHTML = "<thead><tr><th>Archivo</th><th>Línea</th><th>Función</th><th>Métrica</th><th>Razón</th></tr></thead><tbody></tbody>";
+      const tb = tbl.querySelector("tbody");
+      rows.forEach((row) => {{
+        const f = row.f;
+        const s = row.s;
+        const tr = document.createElement("tr");
+        const td0 = document.createElement("td");
+        td0.appendChild(el("code", null, f.file || ""));
+        const tdL = document.createElement("td");
+        tdL.textContent = f.line != null ? String(f.line) : "—";
+        const td1 = document.createElement("td");
+        td1.appendChild(el("code", null, f.function || ""));
+        const td2 = document.createElement("td");
+        td2.appendChild(el("code", null, s.metric || ""));
+        const td3 = document.createElement("td");
+        td3.textContent = s.reason || "";
+        tr.appendChild(td0);
+        tr.appendChild(tdL);
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        tb.appendChild(tr);
+      }});
+      sectionEl.appendChild(tbl);
+    }}
+
+    const mi = document.getElementById("panel-impact");
+    const mc = document.getElementById("panel-cost");
+    const mr = document.getElementById("panel-roi");
+    const wrap = document.getElementById("metrics-tabs-wrap");
+    fillSection(mi, "Impact metrics (ROI numerator)", impactRows);
+    fillSection(mc, "Cost metrics (ROI denominator)", costRows);
+    wrap.style.display = findings.length ? "" : "none";
+
+    mr.innerHTML = "";
+    mr.appendChild(el("h2", null, "ROI preview (referencia)"));
+    const p = document.createElement("p");
+    p.appendChild(document.createTextNode("Con eventos en Zpulse, "));
+    p.appendChild(el("code", null, "GET .../api/v1/summary?days=30"));
+    p.appendChild(document.createTextNode(" devuelve "));
+    p.appendChild(el("code", null, "total_impact_usd"));
+    p.appendChild(document.createTextNode(", "));
+    p.appendChild(el("code", null, "total_cost_usd"));
+    p.appendChild(document.createTextNode(" y "));
+    p.appendChild(el("code", null, "total_roi_percent"));
+    p.appendChild(document.createTextNode("."));
+    mr.appendChild(p);
+    mr.appendChild(
+      el(
+        "div",
+        "roi-formula",
+        "ROI % = (total_impact_usd - total_cost_usd) / total_cost_usd × 100"
+      )
+    );
+    mr.appendChild(
+      el(
+        "p",
+        "process-note",
+        "Este informe es análisis estático (sin USD reales). Para cost_llm: value ≈ cost_input + cost_output (tolerancia 0.01)."
+      )
+    );
+
+    setupMetricsTabs();
+  }}
+
+  function setupMetricsTabs() {{
+    const wrap = document.getElementById("metrics-tabs-wrap");
+    if (!wrap || wrap.style.display === "none") return;
+    const tabBtns = [
+      document.getElementById("tab-btn-impact"),
+      document.getElementById("tab-btn-cost"),
+      document.getElementById("tab-btn-roi"),
+    ];
+    const panels = [
+      document.getElementById("panel-impact"),
+      document.getElementById("panel-cost"),
+      document.getElementById("panel-roi"),
+    ];
+    function showTab(idx) {{
+      panels.forEach((p, j) => {{
+        if (!p) return;
+        if (j === idx) p.removeAttribute("hidden");
+        else p.setAttribute("hidden", "");
+      }});
+      tabBtns.forEach((b, j) => {{
+        if (!b) return;
+        const on = j === idx;
+        b.setAttribute("aria-selected", on ? "true" : "false");
+        b.classList.toggle("tab-btn-active", on);
+        b.tabIndex = on ? 0 : -1;
+      }});
+    }}
+    tabBtns.forEach((btn, i) => {{
+      if (!btn) return;
+      btn.addEventListener("click", () => showTab(i));
+    }});
   }}
 
   function renderFinding(f, idx) {{
@@ -462,27 +684,31 @@ def write_runtime_html(report: AnalysisReport, path: Path) -> None:
 
     const tbl = document.createElement("table");
     tbl.className = "sug";
-    tbl.innerHTML = "<thead><tr><th>Métrica</th><th>Razón</th><th>Ejemplo</th><th>Score</th></tr></thead><tbody></tbody>";
+    tbl.innerHTML = "<thead><tr><th>Categoría</th><th>Métrica</th><th>Razón</th><th>Sugerencia</th><th>Score</th></tr></thead><tbody></tbody>";
     const tb = tbl.querySelector("tbody");
     const sugs = f.suggestions || [];
     if (sugs.length === 0) {{
       const tr = document.createElement("tr");
       const td = document.createElement("td");
-      td.colSpan = 4;
+      td.colSpan = 5;
       td.textContent = "Sin sugerencias";
       tr.appendChild(td);
       tb.appendChild(tr);
     }} else {{
       sugs.forEach((s) => {{
         const tr = document.createElement("tr");
+        const cat = categoryForSuggestion(s);
+        const td0 = document.createElement("td");
+        td0.appendChild(el("code", null, cat || "—"));
         const td1 = document.createElement("td");
         td1.appendChild(el("code", null, s.metric || ""));
         const td2 = document.createElement("td");
         td2.textContent = s.reason || "";
         const td3 = document.createElement("td");
-        td3.appendChild(el("code", null, s.example || ""));
+        td3.appendChild(el("code", null, suggestionText(s)));
         const td4 = document.createElement("td");
         td4.textContent = s.score != null ? String(s.score) : "";
+        tr.appendChild(td0);
         tr.appendChild(td1);
         tr.appendChild(td2);
         tr.appendChild(td3);
@@ -588,6 +814,8 @@ def write_runtime_html(report: AnalysisReport, path: Path) -> None:
 
   const sumEl = document.getElementById("mount-summary");
   sumEl.replaceWith(buildSummaryCard(data));
+
+  buildImpactCostRoi(data);
 
   const findings = data.findings || [];
   const root = document.getElementById("findings-root");

@@ -3,9 +3,11 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from zbills.metrics import category_for_metric, fields_dict_for, suggestion_code
 from zbills.models import Finding, Suggestion
 from zbills.rules import (
-    example_track,
+    detect_cost_snippet,
+    merge_suggestion_objects,
     merge_suggestions,
     score_errors,
     score_time_saved,
@@ -24,7 +26,7 @@ PATTERNS: dict[str, list[tuple[str, re.Pattern[str]]]] = {
             "method",
             re.compile(
                 r"^\s*(?:async\s+)?(?:get|set)\s+(\w+)\s*\("
-            ),  # class getters sometimes
+            ),
         ),
     ],
     "typescript": [
@@ -45,7 +47,6 @@ PATTERNS: dict[str, list[tuple[str, re.Pattern[str]]]] = {
     ],
 }
 
-# JS/TS: const foo = async () => or function expr
 JS_ARROW = re.compile(
     r"^\s*(?:export\s+)?(?:const|let|var)\s+(\w+)\s*=\s*(?:async\s*)?(?:function\s*)?\([^)]*\)\s*=>"
 )
@@ -79,12 +80,10 @@ def analyze_heuristic_file(path: Path, root: Path, language: str) -> list[Findin
     while i < len(lines):
         line = lines[i]
         name: str | None = None
-        kind = ""
         for k, rx in patterns:
             m = rx.match(line)
             if m:
                 name = m.group(1)
-                kind = k
                 break
         if name is None:
             i += 1
@@ -105,7 +104,7 @@ def analyze_heuristic_file(path: Path, root: Path, language: str) -> list[Findin
                 (
                     "value_generated",
                     "Patrones de negocio en nombre o fragmento cercano.",
-                    example_track("value_generated", agent),
+                    suggestion_code("value_generated", agent),
                     v,
                 )
             )
@@ -116,7 +115,7 @@ def analyze_heuristic_file(path: Path, root: Path, language: str) -> list[Findin
                 (
                     "errors_reduced",
                     "try/catch, validación o manejo de errores detectado en el bloque.",
-                    example_track("errors_reduced", agent),
+                    suggestion_code("errors_reduced", agent),
                     se,
                 )
             )
@@ -127,23 +126,34 @@ def analyze_heuristic_file(path: Path, root: Path, language: str) -> list[Findin
                 (
                     "time_saved",
                     "Bloque amplio o indicios de batch/API: candidato a time_saved.",
-                    example_track("time_saved", agent),
+                    suggestion_code("time_saved", agent),
                     st,
                 )
             )
 
-        merged = merge_suggestions(cands)
+        merged_tuples = merge_suggestions(cands)
+        collected: list[Suggestion] = []
+        for m, r, sug, sc in merged_tuples:
+            collected.append(
+                Suggestion(
+                    metric=m,
+                    category=category_for_metric(m),
+                    reason=r,
+                    suggestion=sug,
+                    score=sc,
+                    fields=fields_dict_for(m),
+                )
+            )
+        collected.extend(detect_cost_snippet(snippet, agent))
+        merged = merge_suggestion_objects(collected)
         if merged:
-            suggestions = [
-                Suggestion(metric=m, reason=r, example=e, score=sc) for m, r, e, sc in merged
-            ]
             findings.append(
                 Finding(
                     file=rel,
                     function=name,
                     line=i + 1,
                     language=language,
-                    suggestions=suggestions,
+                    suggestions=merged,
                 )
             )
         i += 1

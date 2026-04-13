@@ -12,7 +12,7 @@ DEFAULT_MODEL_BY_PROVIDER: dict[str, str] = {
     "ollama": "mistral",
     "openai": "gpt-4o-mini",
     "anthropic": "claude-3-5-sonnet-20241022",
-    "gemini": "gemini-2.0-flash",
+    "gemini": "gemini-3.1-flash-lite-preview",
 }
 
 
